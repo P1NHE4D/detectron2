@@ -42,7 +42,7 @@ def setup(args):
     cfg.SOLVER.BASE_LR = 0.02
     cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url(
         "COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml")  # use pretrained weights
-    cfg.MODEL.ROI_HEADS.NUM_CLASSES = 2  # single class
+    cfg.MODEL.ROI_HEADS.NUM_CLASSES = 1  # one class
 
     os.makedirs(cfg.OUTPUT_DIR, exist_ok=True)
 
