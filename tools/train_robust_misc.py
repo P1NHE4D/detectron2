@@ -27,23 +27,6 @@ from detectron2.engine import DefaultTrainer, default_argument_parser, default_s
 
 logger = logging.getLogger("detectron2")
 
-cfg = get_cfg()
-cfg.OUTPUT_DIR = "results/training"
-cfg.merge_from_file(model_zoo.get_config_file("COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml"))
-cfg.DATASETS.TRAIN = ("robust_misc_train")
-cfg.DATASETS.TEST = ()
-cfg.DATALOADER.NUM_WORKERS = 4
-cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url(
-    "COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml")  # use pretrained weights
-cfg.MODEL.ROI_HEADS.NUM_CLASSES = 1  # single class
-
-os.makedirs(cfg.OUTPUT_DIR, exist_ok=True)
-
-cfg.MODEL.WEIGHTS = os.path.join(cfg.OUTPUT_DIR, "model_final.pth")
-cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.5  # testing threshold for model
-cfg.DATASETS.TEST = ("robust_misc_val")
-predictor = DefaultPredictor(cfg)
-
 
 def setup(args):
     """
@@ -84,6 +67,11 @@ def main(args):
     cfg = setup(args)
     trainer = DefaultTrainer(cfg)
     trainer.resume_or_load(resume=False)
+
+    if args.test:
+        cfg.MODEL.WEIGHTS = os.path.join(cfg.OUTPUT_DIR, "model_final.pth")
+        cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.5  # testing threshold for model
+        cfg.DATASETS.TEST = ("robust_misc_val")
 
     return trainer.train()
 
