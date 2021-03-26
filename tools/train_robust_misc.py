@@ -66,8 +66,7 @@ def main(args):
     )
 
     cfg = setup(args)
-    classes = MetadataCatalog.get("robust_misc_train").thing_classes
-    print(f"Classes: {classes}")
+    print(cfg)
 
     trainer = DefaultTrainer(cfg)
     trainer.resume_or_load(resume=False)
