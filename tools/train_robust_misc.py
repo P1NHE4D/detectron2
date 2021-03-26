@@ -44,6 +44,8 @@ def setup(args):
     cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url(
         "COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml")  # use pretrained weights
     cfg.MODEL.ROI_HEADS.NUM_CLASSES = 1  # one class
+    cfg.RETINANET.NUM_CLASSES = 1
+    cfg.SEM_SEG_HEAD.NUM_CLASSES = 1
 
     os.makedirs(cfg.OUTPUT_DIR, exist_ok=True)
 
