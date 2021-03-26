@@ -38,7 +38,7 @@ def setup(args):
     cfg.merge_from_file(model_zoo.get_config_file("COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml"))
     cfg.DATASETS.TRAIN = ("robust_misc_train")
     cfg.DATASETS.TEST = ()
-    cfg.DATALOADER.NUM_WORKERS = 4
+    cfg.DATALOADER.NUM_WORKERS = 2
     cfg.SOLVER.IMS_PER_BATCH = 2
     cfg.SOLVER.BASE_LR = 0.02
     cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url(
