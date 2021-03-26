@@ -22,6 +22,7 @@ import torch
 
 from detectron2 import model_zoo
 from detectron2.config import get_cfg
+from detectron2.data import MetadataCatalog
 from detectron2.data.datasets import register_coco_instances
 from detectron2.engine import DefaultTrainer, default_argument_parser, default_setup, hooks, launch, DefaultPredictor
 
@@ -65,6 +66,9 @@ def main(args):
     )
 
     cfg = setup(args)
+    classes = MetadataCatalog.get("robust_misc_train").thing_classes
+    print(f"Classes: {classes}")
+
     trainer = DefaultTrainer(cfg)
     trainer.resume_or_load(resume=False)
 
