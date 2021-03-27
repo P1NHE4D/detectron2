@@ -55,13 +55,13 @@ def main(args):
     register_coco_instances(
         "robust_misc_train",
         {},
-        "data/robust_misc/annotations/instances_train.json",
+        "data/robust_misc/annotations/instances_train_v2.json",
         "data/robust_misc/train"
     )
     register_coco_instances(
         "robust_misc_val",
         {},
-        "data/robust_misc/annotations/instances_val.json",
+        "data/robust_misc/annotations/instances_val_v2.json",
         "data/robust_misc/val"
     )
 
@@ -71,12 +71,6 @@ def main(args):
     trainer = DefaultTrainer(cfg)
     trainer.resume_or_load(resume=False)
 
-    if args.eval_only:
-        cfg.MODEL.WEIGHTS = os.path.join(cfg.OUTPUT_DIR, "model_final.pth")
-        cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.5  # testing threshold for model
-        cfg.DATASETS.TEST = ("robust_misc_val")
-
-    cfg.MODEL.ROI_HEADS.NUM_CLASSES = 1
     return trainer.train()
 
 
