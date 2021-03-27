@@ -55,13 +55,13 @@ def main(args):
     register_coco_instances(
         "robust_misc_train",
         {},
-        "data/robust_misc/annotations/instances_train_v2.json",
+        "data/robust_misc/annotations/instances_train.json",
         "data/robust_misc/train"
     )
     register_coco_instances(
         "robust_misc_val",
         {},
-        "data/robust_misc/annotations/instances_val_v2.json",
+        "data/robust_misc/annotations/instances_val.json",
         "data/robust_misc/val"
     )
 
