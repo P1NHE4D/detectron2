@@ -76,6 +76,7 @@ def main(args):
         cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.5  # testing threshold for model
         cfg.DATASETS.TEST = ("robust_misc_val")
 
+    cfg.MODEL.ROI_HEADS.NUM_CLASSES = 1
     return trainer.train()
 
 
