@@ -95,10 +95,10 @@ def main(args):
     if args.vis_only:
         cfg.MODEL.WEIGHTS = os.path.join(cfg.OUTPUT_DIR, "model_final.pth")
         cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.5
-        cfg.DATASETS.TEST = ("robust_misc_val",)
+        cfg.DATASETS.TEST = ("robust_misc_test_stage3",)
         predictor = DefaultPredictor(cfg)
         dataset_dicts = DatasetCatalog.get("robust_misc_val")
-        for d in random.sample(dataset_dicts, 10):
+        for d in dataset_dicts:
             img = cv2.imread(d["file_name"])
             outputs = predictor(img)
             v = Visualizer(img)
