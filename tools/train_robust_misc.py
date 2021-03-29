@@ -82,9 +82,10 @@ def main(args):
             outputs = predictor(img)
             v = Visualizer(img)
             v = v.draw_instance_predictions(outputs["instances"].to("cpu"))
-            print(v)
             os.makedirs("visualizations", exist_ok=True)
-            cv2.imwrite(f"visualizations/{d['file_name']}", v.get_image())
+            res = v.get_image()
+            f_name = d['file_name']
+            cv2.imwrite(f"visualizations/{f_name}", res)
         return
 
     trainer = DefaultTrainer(cfg)
