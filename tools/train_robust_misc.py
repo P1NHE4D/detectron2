@@ -25,9 +25,10 @@ import cv2
 
 from detectron2 import model_zoo
 from detectron2.config import get_cfg
-from detectron2.data import MetadataCatalog, DatasetCatalog
+from detectron2.data import MetadataCatalog, DatasetCatalog, build_detection_test_loader
 from detectron2.data.datasets import register_coco_instances
 from detectron2.engine import DefaultTrainer, default_argument_parser, default_setup, hooks, launch, DefaultPredictor
+from detectron2.evaluation import COCOEvaluator, inference_on_dataset
 from detectron2.utils.visualizer import Visualizer
 
 logger = logging.getLogger("detectron2")
@@ -67,11 +68,29 @@ def main(args):
         "data/robust_misc/annotations/instances_val.json",
         "data/robust_misc/val"
     )
+    register_coco_instances(
+        "robust_misc_test_stage1",
+        {},
+        "data/robust_misc_testing/Stage_1/annotations/instances_test.json",
+        "data/robust_misc_testing/Stage_1/test"
+    )
+    register_coco_instances(
+        "robust_misc_test_stage2",
+        {},
+        "data/robust_misc_testing/Stage_2/annotations/instances_test.json",
+        "data/robust_misc_testing/Stage_2/test"
+    )
+    register_coco_instances(
+        "robust_misc_test_stage3",
+        {},
+        "data/robust_misc_testing/Stage_3/annotations/instances_test.json",
+        "data/robust_misc_testing/Stage_3/test"
+    )
 
     cfg = setup(args)
     print(cfg)
 
-    if args.eval_only:
+    if args.vis_only:
         cfg.MODEL.WEIGHTS = os.path.join(cfg.OUTPUT_DIR, "model_final.pth")
         cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.5
         cfg.DATASETS.TEST = ("robust_misc_val",)
@@ -91,10 +110,31 @@ def main(args):
     trainer = DefaultTrainer(cfg)
     trainer.resume_or_load(resume=False)
 
+    if args.eval_only:
+        os.makedirs("evaluation/stage_1", exist_ok=True)
+        os.makedirs("evaluation/stage_2", exist_ok=True)
+        os.makedirs("evaluation/stage_3", exist_ok=True)
+        cfg.MODEL.WEIGHTS = os.path.join(cfg.OUTPUT_DIR, "model_final.pth")
+        cfg.DATASETS.TEST = ("robust_misc_test_stage1", "robust_misc_test_stage2", "robust_misc_test_stage3")
+        cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.5
+        ev1 = COCOEvaluator("robust_misc_test_stage1", output_dir="evaluation/stage_1")
+        st1_loader = build_detection_test_loader(cfg, "robust_misc_test_stage1")
+        model = trainer.build_model
+        inference_on_dataset(model, st1_loader, ev1)
+        ev2 = COCOEvaluator("robust_misc_test_stage2", output_dir="evaluation/stage_2")
+        st2_loader = build_detection_test_loader(cfg, "robust_misc_test_stage2")
+        inference_on_dataset(model, st2_loader, ev2)
+        ev3 = COCOEvaluator("robust_misc_test_stage3", output_dir="evaluation/stage_3")
+        st3_loader = build_detection_test_loader(cfg, "robust_misc_test_stage3")
+        inference_on_dataset(model, st3_loader, ev3)
+        return
+
     return trainer.train()
 
 
 if __name__ == "__main__":
-    args = default_argument_parser().parse_args()
+    parser = default_argument_parser()
+    parser.add_argument("--vis_only", type=bool, default=False)
+    args = parser.parse_args()
     print("Command Line Args:", args)
     main(args)
