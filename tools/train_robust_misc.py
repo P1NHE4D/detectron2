@@ -80,7 +80,7 @@ def main(args):
         for d in random.sample(dataset_dicts, 10):
             img = cv2.imread(d["file_name"])
             outputs = predictor(img)
-            v = Visualizer(img[:, :, ::-1])
+            v = Visualizer(img)
             v = v.draw_instance_predictions(outputs["instances"].to("cpu"))
             os.makedirs("visualizations", exist_ok=True)
             cv2.imwrite(f"visualizations/{d['file_name']}", v.get_image())
