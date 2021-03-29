@@ -29,6 +29,7 @@ from detectron2.data import MetadataCatalog, DatasetCatalog, build_detection_tes
 from detectron2.data.datasets import register_coco_instances
 from detectron2.engine import DefaultTrainer, default_argument_parser, default_setup, hooks, launch, DefaultPredictor
 from detectron2.evaluation import COCOEvaluator, inference_on_dataset
+from detectron2.modeling import build_model
 from detectron2.utils.visualizer import Visualizer
 
 logger = logging.getLogger("detectron2")
@@ -119,7 +120,7 @@ def main(args):
         cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.5
         ev1 = COCOEvaluator("robust_misc_test_stage1", output_dir="evaluation/stage_1")
         st1_loader = build_detection_test_loader(cfg, "robust_misc_test_stage1")
-        model = trainer.build_model
+        model = build_model(cfg)
         inference_on_dataset(model, st1_loader, ev1)
         ev2 = COCOEvaluator("robust_misc_test_stage2", output_dir="evaluation/stage_2")
         st2_loader = build_detection_test_loader(cfg, "robust_misc_test_stage2")
