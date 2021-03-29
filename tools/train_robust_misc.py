@@ -24,6 +24,7 @@ import torch
 import cv2
 
 from detectron2 import model_zoo
+from detectron2.checkpoint import DetectionCheckpointer
 from detectron2.config import get_cfg
 from detectron2.data import MetadataCatalog, DatasetCatalog, build_detection_test_loader
 from detectron2.data.datasets import register_coco_instances
@@ -112,15 +113,16 @@ def main(args):
     trainer.resume_or_load(resume=False)
 
     if args.eval_only:
+        cfg.MODEL.WEIGHTS = os.path.join(cfg.OUTPUT_DIR, "model_final.pth")
+        model = build_model(cfg)
+        DetectionCheckpointer(model).load(os.path.join(cfg.OUTPUT_DIR, "model_final.pth"))
         os.makedirs("evaluation/stage_1", exist_ok=True)
         os.makedirs("evaluation/stage_2", exist_ok=True)
         os.makedirs("evaluation/stage_3", exist_ok=True)
-        cfg.MODEL.WEIGHTS = os.path.join(cfg.OUTPUT_DIR, "model_final.pth")
         cfg.DATASETS.TEST = ("robust_misc_test_stage1", "robust_misc_test_stage2", "robust_misc_test_stage3")
         cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.5
         ev1 = COCOEvaluator("robust_misc_test_stage1", output_dir="evaluation/stage_1")
         st1_loader = build_detection_test_loader(cfg, "robust_misc_test_stage1")
-        model = build_model(cfg)
         inference_on_dataset(model, st1_loader, ev1)
         ev2 = COCOEvaluator("robust_misc_test_stage2", output_dir="evaluation/stage_2")
         st2_loader = build_detection_test_loader(cfg, "robust_misc_test_stage2")
