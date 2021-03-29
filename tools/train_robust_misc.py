@@ -71,7 +71,7 @@ def main(args):
     cfg = setup(args)
     print(cfg)
 
-    if args.evaluate_only:
+    if args.eval_only:
         cfg.MODEL.WEIGHTS = os.path.join(cfg.OUTPUT_DIR, "model_final.pth")
         cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.5
         cfg.DATASETS.TEST = ("robust_misc_val",)
