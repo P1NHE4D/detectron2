@@ -84,9 +84,7 @@ def main(args):
             v = v.draw_instance_predictions(outputs["instances"].to("cpu"))
             os.makedirs("visualizations", exist_ok=True)
             res = v.get_image()
-            f_name = d['file_name']
-            print(res)
-            print(f"visualizations/{f_name}")
+            f_name = d['file_name'].split("/")[-1]
             cv2.imwrite(f"visualizations/{f_name}", res)
         return
 
