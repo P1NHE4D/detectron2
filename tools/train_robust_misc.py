@@ -97,7 +97,7 @@ def main(args):
         cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.5
         cfg.DATASETS.TEST = ("robust_misc_test_stage3",)
         predictor = DefaultPredictor(cfg)
-        dataset_dicts = DatasetCatalog.get("robust_misc_val")
+        dataset_dicts = DatasetCatalog.get("robust_misc_test_stage3")
         for d in dataset_dicts:
             img = cv2.imread(d["file_name"])
             outputs = predictor(img)
