@@ -18,13 +18,17 @@ You may want to write your own script with your datasets and other customization
 
 import logging
 import os
+import random
+
 import torch
+import cv2
 
 from detectron2 import model_zoo
 from detectron2.config import get_cfg
-from detectron2.data import MetadataCatalog
+from detectron2.data import MetadataCatalog, DatasetCatalog
 from detectron2.data.datasets import register_coco_instances
 from detectron2.engine import DefaultTrainer, default_argument_parser, default_setup, hooks, launch, DefaultPredictor
+from detectron2.utils.visualizer import Visualizer
 
 logger = logging.getLogger("detectron2")
 
@@ -66,6 +70,21 @@ def main(args):
 
     cfg = setup(args)
     print(cfg)
+
+    if args.evaluate_only:
+        cfg.MODEL.WEIGHTS = os.path.join(cfg.OUTPUT_DIR, "model_final.pth")
+        cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.5
+        cfg.DATASETS.TEST = ("robust_misc_val",)
+        predictor = DefaultPredictor(cfg)
+        dataset_dicts = DatasetCatalog.get("robust_misc_val")
+        for d in random.sample(dataset_dicts, 10):
+            img = cv2.imread(d["file_name"])
+            outputs = predictor(img)
+            v = Visualizer(img[:, :, ::-1])
+            v = v.draw_instance_predictions(outputs["instances"].to("cpu"))
+            os.makedirs("visualizations", exist_ok=True)
+            cv2.imwrite(f"visualizations/{d['file_name']}", v.get_image())
+        return
 
     trainer = DefaultTrainer(cfg)
     trainer.resume_or_load(resume=False)
