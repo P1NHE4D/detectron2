@@ -93,6 +93,7 @@ def main(args):
     print(cfg)
 
     if args.vis_only:
+        # visualise masks
         cfg.MODEL.WEIGHTS = os.path.join(cfg.OUTPUT_DIR, "model_final.pth")
         cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.5
         cfg.DATASETS.TEST = ("robust_misc_test_stage3",)
@@ -109,10 +110,12 @@ def main(args):
             cv2.imwrite(f"visualizations/{f_name}", res)
         return
 
+    # train model
     trainer = DefaultTrainer(cfg)
     trainer.resume_or_load(resume=False)
 
     if args.eval_only:
+        # run coco eval on all test sets
         cfg.MODEL.WEIGHTS = os.path.join(cfg.OUTPUT_DIR, "model_final.pth")
         model = build_model(cfg)
         DetectionCheckpointer(model).load(os.path.join(cfg.OUTPUT_DIR, "model_final.pth"))
